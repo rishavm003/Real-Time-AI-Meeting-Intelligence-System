@@ -1,0 +1,21 @@
+name = "meet-brief-api"
+main = "src/index.js"
+compatibility_date = "2024-03-01"
+
+[vars]
+NVIDIA_API_KEY = "" # To be filled by user
+AGENT_ROUTER_API_KEY = "" # To be filled by user
+JWT_SECRET = "meet-brief-secret-change-me"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "meet-brief-db"
+database_id = "f000-0000-0000-0000" # Replace with actual ID after 'npx wrangler d1 create meet-brief-db'
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "k000-0000-0000-0000" # Replace with actual ID after 'npx wrangler kv:namespace create SESSIONS'
+
+[[r2_buckets]]
+binding = "EXPORTS"
+bucket_name = "meet-brief-exports"

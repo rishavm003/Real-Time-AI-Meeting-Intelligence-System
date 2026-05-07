@@ -1,26 +1,43 @@
 'use client';
-import React from 'react';
-import TranscriptProcessor from '@/components/transcriptProcessor';
+import { useEffect, useState } from 'react';
+import { fetcher } from '@/lib/api';
+import Link from 'next/link';
 
-const Dashboard = () => {
-    return (
-        <div className="min-h-screen bg-slate-50 dark:bg-[#0b0c10] pt-24 pb-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300">
-            <div className="max-w-7xl mx-auto">
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Dashboard</h1>
-                    <p className="mt-2 text-slate-600 dark:text-slate-400">
-                        Upload your meeting transcripts and generate AI summaries.
-                    </p>
-                </div>
+export default function Dashboard() {
+  const [meetings, setMeetings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-                <div className="bg-white dark:bg-slate-900/50 rounded-2xl shadow-xl dark:shadow-none border border-slate-200 dark:border-slate-800 overflow-hidden backdrop-blur-sm">
-                    <div className="p-6 sm:p-10">
-                        <TranscriptProcessor />
-                    </div>
-                </div>
+  useEffect(() => {
+    fetcher('/api/meetings')
+      .then(setMeetings)
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div className="p-8 text-center">Loading...</div>;
+
+  return (
+    <div className="p-8 max-w-6xl mx-auto">
+      <h1 className="text-3xl font-bold mb-8">My Meetings</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {meetings.map((meeting) => (
+          <Link href={`/meetings/${meeting.id}`} key={meeting.id}>
+            <div className="border rounded-lg p-6 hover:shadow-lg transition-shadow cursor-pointer bg-white">
+              <h2 className="text-xl font-semibold mb-2">{meeting.title}</h2>
+              <p className="text-gray-500 text-sm mb-4">
+                {new Date(meeting.createdAt).toLocaleDateString()}
+              </p>
+              <div className="text-gray-600 line-clamp-3 text-sm">
+                {meeting.transcript.substring(0, 150)}...
+              </div>
             </div>
+          </Link>
+        ))}
+      </div>
+      {meetings.length === 0 && (
+        <div className="text-center text-gray-500 mt-20">
+          No meetings found. Start recording from the extension!
         </div>
-    );
-};
-
-export default Dashboard;
+      )}
+    </div>
+  );
+}
